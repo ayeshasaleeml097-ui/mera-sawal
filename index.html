@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>میرا سوال — آف لائن ورژن</title>
+<style>
+:root{--p:#5b3fd1;--p2:#7c3aed;--bg:#f5f6fa;--card:#fff;--txt:#1f2430;--muted:#667085;--line:#e4e7ec;--ok:#087443;--bad:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:Arial,"Noto Naskh Arabic",sans-serif}
+header{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:15px 4%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{font-size:25px;font-weight:bold}.nav{display:flex;gap:7px;flex-wrap:wrap}.nav button,.btn,.tab{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font:inherit}
+.nav button{color:#fff;background:#ffffff1c;border:1px solid #ffffff45}.btn{background:var(--p);color:#fff}.btn.alt{background:#ece9ff;color:#4934a5}.btn.red{background:#b42318}
+main{max-width:1050px;margin:28px auto;padding:0 15px}.page{display:none}.page.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 6px 20px #00000008}
+.hero{text-align:center;padding:40px}.muted{color:var(--muted)}label{display:block;margin:13px 0 6px;font-weight:bold}input,textarea,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--txt);font:inherit}textarea{min-height:120px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.grid,.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}.tile,.stat{padding:17px;text-align:center;border:1px solid var(--line);border-radius:13px;background:#fff}.tile{cursor:pointer}.stat b{display:block;font-size:27px;color:var(--p)}
+.q{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}.answer{white-space:pre-wrap;line-height:1.8;background:#f7f7fb;padding:12px;border-radius:10px;margin-top:10px}.tag{display:inline-block;padding:4px 9px;border-radius:99px;background:#fff3e0;color:#9a5a00;font-size:12px}.done{background:#dcfae6;color:var(--ok)}
+.result{display:none;margin-top:14px;padding:14px;border-radius:10px}.result.ok{display:block;background:#e8f7ee;color:var(--ok)}.result.bad{display:block;background:#fff0ef;color:var(--bad)}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.tab{border:1px solid var(--line);background:#fff;color:var(--txt)}.tab.active{background:var(--p);color:#fff}.id{font-size:21px;font-weight:bold;direction:ltr;display:inline-block}
+.note{background:#f1efff;border:1px solid #d9d1ff;padding:13px;border-radius:10px;color:#4934a5}footer{text-align:center;color:var(--muted);padding:25px}
+@media(max-width:600px){header{justify-content:center}.nav{justify-content:center}.hero{padding:25px}.hero h1{font-size:25px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="logo">❓ میرا سوال</div>
+ <div class="nav">
+  <button onclick="go('home')">ہوم</button><button onclick="go('ask')">سوال پوچھیں</button>
+  <button onclick="go('public')">عوامی سوالات</button><button onclick="go('my')">میرے سوالات</button>
+  <button onclick="go('check')">جواب دیکھیں</button><button onclick="go('login')">ایڈمن</button>
+ </div>
+</header>
+<main>
+<section id="home" class="page active"><div class="card hero"><h1>اپنا سوال پوچھیں، جواب حاصل کریں</h1><p class="muted">یہ ورژن Supabase یا API کے بغیر براہِ راست browser میں کام کرتا ہے۔</p><button class="btn" onclick="go('ask')">سوال پوچھیں</button></div>
+<div class="card"><h2>موضوع منتخب کریں</h2><div class="grid">
+<div class="tile" onclick="cat('کمپیوٹر')">💻 کمپیوٹر</div><div class="tile" onclick="cat('موبائل')">📱 موبائل</div><div class="tile" onclick="cat('تعلیم')">📚 تعلیم</div><div class="tile" onclick="cat('آن لائن کام')">💼 آن لائن کام</div><div class="tile" onclick="cat('انٹرنیٹ')">🌐 انٹرنیٹ</div><div class="tile" onclick="cat('دیگر')">❓ دیگر</div></div></div></section>
+
+<section id="ask" class="page"><div class="card"><h2>سوال بھیجیں</h2>
+<form id="form"><label>نام</label><input id="name" placeholder="اختیاری"><label>موضوع</label><select id="category" required><option value="">منتخب کریں</option><option>کمپیوٹر</option><option>موبائل</option><option>تعلیم</option><option>آن لائن کام</option><option>انٹرنیٹ</option><option>دیگر</option></select><label>عنوان</label><input id="title" required placeholder="سوال کا مختصر عنوان"><label>مکمل سوال</label><textarea id="text" required placeholder="اپنا مسئلہ تفصیل سے لکھیں..."></textarea><label><input id="pub" type="checkbox" style="width:auto"> جواب آنے کے بعد عوامی کیا جا سکتا ہے</label><div class="actions"><button class="btn">سوال بھیجیں</button></div></form><div id="sendRes" class="result"></div></div></section>
+
+<section id="check" class="page"><div class="card"><h2>اپنا جواب دیکھیں</h2><input id="qid" dir="ltr" placeholder="MS-12345678"><div class="actions"><button class="btn" onclick="check()">تلاش کریں</button></div><div id="checkRes" class="result"></div></div></section>
+<section id="my" class="page"><div class="card"><h2>اس browser کے سوالات</h2><div id="myList"></div></div></section>
+<section id="public" class="page"><div class="card"><h2>عوامی سوالات</h2><input id="search" placeholder="تلاش کریں..." oninput="publicList()"><div id="publicList"></div></div></section>
+
+<section id="login" class="page"><div class="card" style="max-width:520px;margin:auto"><h2>ایڈمن لاگ اِن</h2><p class="note">صرف ایڈمن کے لیے محفوظ لاگ اِن</p><label>پاس ورڈ</label><input id="pass" dir="ltr" type="password"><div class="actions"><button class="btn" onclick="login()">لاگ اِن</button></div><div id="loginRes" class="result"></div></div></section>
+
+<section id="admin" class="page"><div class="card"><div class="actions" style="justify-content:space-between"><h2 style="margin:0">ایڈمن پینل</h2><button class="btn red" onclick="logout()">لاگ آؤٹ</button></div><div class="stats"><div class="stat"><b id="allN">0</b>کل</div><div class="stat"><b id="penN">0</b>زیر انتظار</div><div class="stat"><b id="ansN">0</b>جواب دیے گئے</div><div class="stat"><b id="pubN">0</b>عوامی</div></div></div>
+<div class="card"><h2>تمام سوالات</h2><input id="adminSearch" placeholder="ID، نام یا سوال تلاش کریں..." oninput="adminList()"><div id="adminList"></div></div></section>
+</main>
+<footer>میرا سوال — Local Version</footer>
+<script>
+const DB='meraSawalLocalV2', MY='meraSawalMyLocalV2', PASS='AWAN103108';
+let admin=false;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function getQuestions(){
+  try { return JSON.parse(localStorage.getItem(DB) || '[]'); }
+  catch(e){ return []; }
+}
+function saveQuestions(a){ localStorage.setItem(DB, JSON.stringify(a)); }
+
+function go(id){
+  if(id==='admin' && !admin) id='login';
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  const page=$(id); if(page) page.classList.add('active');
+  if(id==='admin') renderAdmin();
+  if(id==='my') renderMy();
+  if(id==='public') renderPublic();
+  window.scrollTo(0,0);
+}
+function cat(c){ go('ask'); $('category').value=c; }
+
+function view(q){
+  return `<div class="q"><b>${esc(q.title)}</b>
+  <span class="tag ${q.answered?'done':''}">${q.answered?'جواب دیا گیا':'زیر انتظار'}</span>
+  <div class="muted">ID: <span dir="ltr">${esc(q.id)}</span> | ${esc(q.category)}</div>
+  <div class="answer"><b>سوال:</b><br>${esc(q.question)}</div>
+  ${q.answered?`<div class="answer"><b>جواب:</b><br>${esc(q.answer)}</div>
+  ${q.video_url?`<div class="actions"><a class="btn" href="${esc(q.video_url)}" target="_blank" rel="noopener">🎥 ویڈیو دیکھیں</a></div>`:''}
+  ${q.app_url?`<div class="actions"><a class="btn alt" href="${esc(q.app_url)}" target="_blank" rel="noopener">📱 ایپ / فائل حاصل کریں</a></div>`:''}`:''}</div>`;
+}
+
+$('form').addEventListener('submit', ev=>{
+  ev.preventDefault();
+  const title=$('title').value.trim(), question=$('text').value.trim(), category=$('category').value;
+  if(!title || !question || !category){
+    alert('موضوع، عنوان اور سوال ضرور بھریں۔'); return;
+  }
+  const id='MS-'+Date.now().toString().slice(-8);
+  const q={
+    id,
+    name:$('name').value.trim(),
+    category,
+    title,
+    question,
+    is_public:$('pub').checked,
+    answered:false,
+    answer:'',
+    video_url:'',
+    app_url:'',
+    created_at:new Date().toISOString()
+  };
+  const a=getQuestions(); a.unshift(q); saveQuestions(a);
+  const mine=JSON.parse(localStorage.getItem(MY)||'[]'); mine.unshift(id);
+  localStorage.setItem(MY,JSON.stringify(mine));
+  $('sendRes').className='result ok';
+  $('sendRes').innerHTML='✓ سوال کامیابی سے محفوظ ہو گیا۔ آپ کی ID:<br><span class="id">'+id+'</span>';
+  $('form').reset();
+});
+
+function check(){
+  const q=getQuestions().find(x=>x.id===$('qid').value.trim().toUpperCase());
+  $('checkRes').className='result '+(q?'ok':'bad');
+  $('checkRes').innerHTML=q?view(q):'یہ ID نہیں ملی۔';
+}
+function renderMy(){
+  const ids=JSON.parse(localStorage.getItem(MY)||'[]');
+  const a=getQuestions().filter(q=>ids.includes(q.id));
+  $('myList').innerHTML=a.length?a.map(view).join(''):'<p class="muted">ابھی کوئی سوال نہیں۔</p>';
+}
+function renderPublic(){
+  const t=($('search').value||'').toLowerCase();
+  const a=getQuestions().filter(q=>q.is_public && q.answered &&
+    (q.title+' '+q.question).toLowerCase().includes(t));
+  $('publicList').innerHTML=a.length?a.map(view).join(''):'<p class="muted">ابھی کوئی عوامی جواب نہیں۔</p>';
+}
+function publicList(){ renderPublic(); }
+
+function login(){
+  if($('pass').value===PASS){ admin=true; $('pass').value=''; go('admin'); }
+  else { $('loginRes').className='result bad'; $('loginRes').textContent='پاس ورڈ غلط ہے۔'; }
+}
+function logout(){ admin=false; go('home'); }
+
+function renderAdmin(){
+  let a=getQuestions(), t=($('adminSearch').value||'').toLowerCase();
+  $('allN').textContent=a.length;
+  $('penN').textContent=a.filter(q=>!q.answered).length;
+  $('ansN').textContent=a.filter(q=>q.answered).length;
+  $('pubN').textContent=a.filter(q=>q.is_public).length;
+  a=a.filter(q=>(q.id+' '+(q.name||'')+' '+q.title+' '+q.question).toLowerCase().includes(t));
+  $('adminList').innerHTML=a.length?a.map(q=>`<div class="q"><b>${esc(q.title)}</b>
+  <div class="muted">${esc(q.name||'نام نہیں')} | ${esc(q.category)} | <span dir="ltr">${esc(q.id)}</span></div>
+  <div class="answer">${esc(q.question)}</div>
+  ${q.answered?
+    `<div class="answer"><b>جواب:</b><br>${esc(q.answer)}</div>
+     <label>🎥 ویڈیو لنک</label><input id="v_${q.id}" value="${esc(q.video_url||'')}" placeholder="https://...">
+     <label>📱 ایپ / فائل لنک</label><input id="a_${q.id}" value="${esc(q.app_url||'')}" placeholder="https://...">
+     <div class="actions"><button class="btn" onclick="saveLinks('${q.id}')">لنکس محفوظ کریں</button>
+     <button class="btn alt" onclick="editQ('${q.id}')">جواب تبدیل کریں</button>
+     <button class="btn red" onclick="delQ('${q.id}')">حذف</button></div>`:
+    `<textarea id="r_${q.id}" placeholder="جواب لکھیں..."></textarea>
+     <label>🎥 ویڈیو لنک (اختیاری)</label><input id="v_${q.id}" placeholder="https://youtube.com/...">
+     <label>📱 ایپ / فائل لنک (اختیاری)</label><input id="a_${q.id}" placeholder="https://...">
+     <label><input id="p_${q.id}" type="checkbox" style="width:auto" ${q.is_public?'checked':''}> عوامی کریں</label>
+     <div class="actions"><button class="btn" onclick="reply('${q.id}')">جواب، ویڈیو اور لنک محفوظ کریں</button>
+     <button class="btn red" onclick="delQ('${q.id}')">حذف</button></div>`}
+  </div>`).join(''):'<p class="muted">کوئی سوال نہیں۔</p>';
+}
+function adminList(){ renderAdmin(); }
+
+function reply(id){
+  const input=$('r_'+id);
+  const v=input ? input.value.trim() : '';
+  if(!v){ alert('جواب لکھیں۔'); return; }
+  const a=getQuestions(), q=a.find(x=>x.id===id);
+  if(!q) return;
+  q.answer=v; q.video_url=($('v_'+id)?.value||'').trim(); q.app_url=($('a_'+id)?.value||'').trim(); q.answered=true; q.is_public=$('p_'+id).checked;
+  saveQuestions(a); renderAdmin();
+}
+function saveLinks(id){
+  const a=getQuestions(),q=a.find(x=>x.id===id);
+  if(!q) return;
+  q.video_url=($('v_'+id)?.value||'').trim();
+  q.app_url=($('a_'+id)?.value||'').trim();
+  saveQuestions(a); renderAdmin();
+}
+function editQ(id){
+  const a=getQuestions(),q=a.find(x=>x.id===id);
+  if(!q) return;
+  const v=prompt('نیا جواب:',q.answer);
+  if(v!==null){q.answer=v.trim();q.answered=true;saveQuestions(a);renderAdmin();}
+}
+function delQ(id){
+  if(!confirm('یہ سوال حذف کرنا ہے؟'))return;
+  saveQuestions(getQuestions().filter(q=>q.id!==id)); renderAdmin();
+}
+</script>
+</body></html>
